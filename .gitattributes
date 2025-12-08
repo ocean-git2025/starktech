@@ -1,0 +1,2 @@
+﻿# Git LFS配置
+*.pkl filter=lfs diff=lfs merge=lfs -text
