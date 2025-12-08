@@ -1,0 +1,7 @@
+﻿# 忽略所有文件
+*
+# 但不忽略这些关键文件
+!.gitignore
+!.gitattributes
+!taiwan_stock_data_optimized.pkl
+!README.md
