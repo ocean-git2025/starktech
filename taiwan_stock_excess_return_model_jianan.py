@@ -1114,23 +1114,23 @@ def load_saved_data():
 
     if os.path.exists(LGB_FEATURE_IMPORTANCE_FILE):
         saved_data['lgb_feature_importance'] = pd.read_csv(LGB_FEATURE_IMPORTANCE_FILE)
-        print(f"✅ 已加载LightGBM特征重要性: {LGB_FEATURE_IMPORTANCE_FILE}")
+        print(f" 已加载LightGBM特征重要性: {LGB_FEATURE_IMPORTANCE_FILE}")
 
     if os.path.exists(CORE_FACTORS_FILE):
         saved_data['core_factors'] = pd.read_csv(CORE_FACTORS_FILE)
-        print(f"✅ 已加载核心因子列表: {CORE_FACTORS_FILE}")
+        print(f" 已加载核心因子列表: {CORE_FACTORS_FILE}")
 
     if os.path.exists(FACTOR_IC_METRICS_FILE):
         saved_data['factor_ic_metrics'] = pd.read_csv(FACTOR_IC_METRICS_FILE)
-        print(f"✅ 已加载因子IC指标: {FACTOR_IC_METRICS_FILE}")
+        print(f" 已加载因子IC指标: {FACTOR_IC_METRICS_FILE}")
 
     if os.path.exists(FINANCIAL_IC_FILE):
         saved_data['financial_ic'] = pd.read_csv(FINANCIAL_IC_FILE)
-        print(f"✅ 已加载财务因子IC指标: {FINANCIAL_IC_FILE}")
+        print(f" 已加载财务因子IC指标: {FINANCIAL_IC_FILE}")
 
     if os.path.exists(TECHNICAL_IC_FILE):
         saved_data['technical_ic'] = pd.read_csv(TECHNICAL_IC_FILE)
-        print(f"✅ 已加载技术因子IC指标: {TECHNICAL_IC_FILE}")
+        print(f" 已加载技术因子IC指标: {TECHNICAL_IC_FILE}")
 
     return saved_data
 
@@ -1142,7 +1142,7 @@ def save_factor_data(feature_importance_lgb, core_factors, ic_df=None,
     # 保存LightGBM特征重要性
     if feature_importance_lgb is not None and not feature_importance_lgb.empty:
         feature_importance_lgb.to_csv(LGB_FEATURE_IMPORTANCE_FILE, index=False)
-        print(f"✅ LightGBM特征重要性已保存: {LGB_FEATURE_IMPORTANCE_FILE}")
+        print(f" LightGBM特征重要性已保存: {LGB_FEATURE_IMPORTANCE_FILE}")
 
     # 保存核心因子列表
     if core_factors is not None:
@@ -1151,22 +1151,22 @@ def save_factor_data(feature_importance_lgb, core_factors, ic_df=None,
             'factor_type': ['财务因子' if col.startswith('fin_') else '技术因子' for col in core_factors]
         })
         core_factors_df.to_csv(CORE_FACTORS_FILE, index=False)
-        print(f"✅ 核心因子列表已保存: {CORE_FACTORS_FILE}")
+        print(f" 核心因子列表已保存: {CORE_FACTORS_FILE}")
 
     # 保存因子IC指标
     if ic_df is not None and not ic_df.empty:
         ic_df.to_csv(FACTOR_IC_METRICS_FILE, index=False)
-        print(f"✅ 因子IC指标已保存: {FACTOR_IC_METRICS_FILE}")
+        print(f" 因子IC指标已保存: {FACTOR_IC_METRICS_FILE}")
 
     # 保存财务因子IC指标
     if financial_ic_df is not None and not financial_ic_df.empty:
         financial_ic_df.to_csv(FINANCIAL_IC_FILE, index=False)
-        print(f"✅ 财务因子IC指标已保存: {FINANCIAL_IC_FILE}")
+        print(f" 财务因子IC指标已保存: {FINANCIAL_IC_FILE}")
 
     # 保存技术因子IC指标
     if technical_ic_df is not None and not technical_ic_df.empty:
         technical_ic_df.to_csv(TECHNICAL_IC_FILE, index=False)
-        print(f"✅ 技术因子IC指标已保存: {TECHNICAL_IC_FILE}")
+        print(f" 技术因子IC指标已保存: {TECHNICAL_IC_FILE}")
 
 
 # ==================== 辅助函数 ====================
@@ -1199,7 +1199,7 @@ def validate_price_data(df):
         print(f" 警告：发现 {invalid_price_count} 个非正价格。这些行将在后续步骤中被移除。")
         # 这里不直接返回False，因为后续步骤可以处理，但发出警告
 
-    print("✅ 价格数据验证通过。")
+    print(" 价格数据验证通过。")
     return True
 
 
@@ -3094,7 +3094,7 @@ def calculate_future_returns_and_labels(df, days=FUTURE_DAYS):
             negative_return = df_fixed[negative_mask]['future_return'].mean()
             return_diff = positive_return - negative_return
 
-            print("✅ 标签有效性验证:")
+            print(" 标签有效性验证:")
             print(f"  正样本平均收益: {positive_return:.6f} ({positive_return:.4%})")
             print(f"  负样本平均收益: {negative_return:.6f} ({negative_return:.4%})")
             print(f"  收益差异: {return_diff:.6f} ({return_diff:.4%})")
@@ -4486,7 +4486,7 @@ def train_lightgbm_default(X_train, y_train, X_val, y_val, X_test, y_test, featu
 
         with open(rolling_cv_file, 'wb') as f:
             pickle.dump(rolling_cv_data_save, f, protocol=4)
-        print(f"✅ 滚动交叉验证数据已保存: {rolling_cv_file}")
+        print(f" 滚动交叉验证数据已保存: {rolling_cv_file}")
 
         # 单独保存集成模型
         model_file = f'lightgbm_ensemble_model_{timestamp}.pkl'
@@ -4500,7 +4500,7 @@ def train_lightgbm_default(X_train, y_train, X_val, y_val, X_test, y_test, featu
         }
         with open(model_file, 'wb') as f:
             pickle.dump(model_save_data, f, protocol=4)
-        print(f"✅ LightGBM集成模型已保存: {model_file}")
+        print(f" LightGBM集成模型已保存: {model_file}")
     else:
         # 原来的训练逻辑
         print("使用普通训练模式...")
@@ -4667,7 +4667,7 @@ def train_lightgbm_default(X_train, y_train, X_val, y_val, X_test, y_test, featu
         feature_importance = pd.DataFrame(columns=['feature', 'gain', 'importance_type'])
 
     # 可选：打印特征重要性信息，方便调试
-    print(f"✅ 特征重要性提取完成：")
+    print(f" 特征重要性提取完成：")
     print(f"   - 特征总数：{feature_num}")
     print(f"   - 有效特征重要性数量：{len(feature_importance)}")
     print(f"   - 前5个重要特征：\n{feature_importance.head()}")
@@ -5947,7 +5947,7 @@ def select_stocks_with_lightgbm_unified(X_train, y_train, X_test, test_df, featu
     top_stocks = results_sorted.head(n_select).copy()
     top_stocks['排名'] = range(1, len(top_stocks) + 1)
 
-    print(f"✅ LightGBM选股完成（前{top_percent:.0%}逻辑）")
+    print(f" LightGBM选股完成（前{top_percent:.0%}逻辑）")
     print(f"  总股票数: {n_stocks}只")
     print(f"  应选前{top_percent:.0%}: {int(n_stocks * top_percent)}只")
     print(f"  实际选择: {n_select}只（最多{top_k}只）")
@@ -6250,7 +6250,7 @@ def generate_final_output(feature_cols, model_results, backtest_results, core_fa
     factors_file = f'final_factors_list_{timestamp}.json'
     with open(factors_file, 'w', encoding='utf-8') as f:
         json.dump(final_factors, f, indent=2, ensure_ascii=False)
-    print(f"✅ 最终因子列表已保存: {factors_file}")
+    print(f" 最终因子列表已保存: {factors_file}")
 
     # 2. 模型性能输出
     model_performance = {
@@ -6271,7 +6271,7 @@ def generate_final_output(feature_cols, model_results, backtest_results, core_fa
     performance_file = f'model_performance_{timestamp}.json'
     with open(performance_file, 'w', encoding='utf-8') as f:
         json.dump(model_performance, f, indent=2)
-    print(f"✅ 模型性能指标已保存: {performance_file}")
+    print(f" 模型性能指标已保存: {performance_file}")
 
     # 3. 回测结果输出
     if backtest_results:
@@ -6294,14 +6294,14 @@ def generate_final_output(feature_cols, model_results, backtest_results, core_fa
         backtest_file = f'backtest_results_detailed_{timestamp}.json'
         with open(backtest_file, 'w', encoding='utf-8') as f:
             json.dump(backtest_summary, f, indent=2, ensure_ascii=False)
-        print(f"✅ 详细回测结果已保存: {backtest_file}")
+        print(f" 详细回测结果已保存: {backtest_file}")
 
         # 生成HTML报告
         html_report = generate_html_report(final_factors, model_performance, backtest_summary)
         html_file = f'final_report_{timestamp}.html'
         with open(html_file, 'w', encoding='utf-8') as f:
             f.write(html_report)
-        print(f"✅ HTML综合报告已保存: {html_file}")
+        print(f" HTML综合报告已保存: {html_file}")
 
     # 4. 迭代优化建议
     optimization_suggestions = generate_optimization_suggestions(
@@ -6316,7 +6316,7 @@ def generate_final_output(feature_cols, model_results, backtest_results, core_fa
         for suggestion in optimization_suggestions:
             f.write(f"• {suggestion}\n")
 
-    print(f"✅ 迭代优化建议已保存: {suggestions_file}")
+    print(f" 迭代优化建议已保存: {suggestions_file}")
 
     return {
         'factors_file': factors_file,
@@ -6758,7 +6758,7 @@ def quick_test_lightgbm():
             print(f"未知数据格式: {type(data)}")
             return None
 
-        print(f"✅ 数据加载成功: {df.shape}")
+        print(f" 数据加载成功: {df.shape}")
         print(f"时间范围: {df['date'].min()} 到 {df['date'].max()}")
         print(f"股票数量: {df['stock_code'].nunique()}")
         print(f"原始特征数量: {len(feature_cols)}")
@@ -6922,7 +6922,7 @@ def quick_test_lightgbm():
                 "y_proba": y_proba  # 新增预测概率列，更全面
             })
             df.to_csv(os.path.join(save_dir, "test_pred_true.csv"), index=False, encoding="utf-8")
-            print("✅ 真实标签、预测标签和预测概率已保存为csv文件")
+            print(" 真实标签、预测标签和预测概率已保存为csv文件")
         else:
             print(" 无法保存csv：y_test或y_pred不是数组/列表类型")
     except Exception as e:
@@ -6981,7 +6981,7 @@ def quick_test_lightgbm():
                 'roc_auc': roc_auc
             }
         }, f)
-    print(f"✅ LightGBM模型已保存: {model_file}")
+    print(f" LightGBM模型已保存: {model_file}")
 
     # 保存结果到文本文件
     result_file = f'lightgbm_test_results_{timestamp}.txt'
@@ -7005,7 +7005,7 @@ def quick_test_lightgbm():
         for idx, row in feature_importance.head(10).iterrows():
             f.write(f"  {row['feature']}: {row['importance']:.4f}\n")
 
-    print(f"✅ 测试结果已保存: {result_file}")
+    print(f" 测试结果已保存: {result_file}")
 
     return {
         'model': lgb_model,
@@ -7245,7 +7245,7 @@ def main():
                     backtest_file = f'backtest_results_{timestamp}.pkl'
                     with open(backtest_file, 'wb') as f:
                         pickle.dump(backtest_results, f, protocol=4)
-                    print(f"\n✅ 回测结果已保存: {backtest_file}")
+                    print(f"\n 回测结果已保存: {backtest_file}")
 
                     # 生成回测报告
                     report_file = f'backtest_report_{timestamp}.txt'
@@ -7303,7 +7303,7 @@ def main():
                                     if total_sell > 0:
                                         f.write(f"  盈利交易比例: {profitable / total_sell:.2%}\n")
 
-                    print(f"✅ 回测报告已保存: {report_file}")
+                    print(f" 回测报告已保存: {report_file}")
 
                     # 绘制简单图表
                     try:
@@ -7343,7 +7343,7 @@ def main():
         # 保存选股结果
         selected_file = f'selected_stocks_{timestamp}.csv'
         daily_selected_df.to_csv(selected_file, index=False, encoding='utf-8-sig')
-        print(f"✅ 选股结果已保存: {selected_file}")
+        print(f" 选股结果已保存: {selected_file}")
 
         # 10. 总结
         end_time = time.time()
@@ -7416,15 +7416,15 @@ def main():
                         print(f"   理论年化换手率: {avg_monthly_turnover * 12:.2%}")
 
         # 打印优化效果
-        print("\n🔧 优化效果总结:")
-        print("   1. ✅ 使用简化回测逻辑，避免复杂错误")
-        print("   2. ✅ 修复交易统计函数中的语法错误")
-        print("   3. ✅ 确保数据列名匹配")
-        print("   4. ✅ 简化价格数据获取逻辑")
-        print("   5. ✅ 添加异常处理，避免程序崩溃")
-        print("   6. ✅ 生成完整的回测报告和图表")
-        print("   7. ✅ 新增：显示完整的区间日期和年化指标")
-        print("   8. ✅ 新增：生成详细回测报告")
+        print("\n 优化效果总结:")
+        print("   1.  使用简化回测逻辑，避免复杂错误")
+        print("   2.  修复交易统计函数中的语法错误")
+        print("   3.  确保数据列名匹配")
+        print("   4.  简化价格数据获取逻辑")
+        print("   5.  添加异常处理，避免程序崩溃")
+        print("   6.  生成完整的回测报告和图表")
+        print("   7.  新增：显示完整的区间日期和年化指标")
+        print("   8.  新增：生成详细回测报告")
 
         return {
             'models': models,
@@ -7436,7 +7436,7 @@ def main():
         }
 
     except Exception as e:
-        print(f"❌ 程序执行出错: {str(e)}")
+        print(f" 程序执行出错: {str(e)}")
         traceback.print_exc()
         return None
 
@@ -7567,20 +7567,20 @@ def save_backtest_report(metrics, filepath):
             f.write("-" * 40 + "\n")
 
             if metrics.get('年化夏普比率', 0) > 1.0:
-                f.write("✅ 夏普比率 > 1.0: 策略表现优秀\n")
+                f.write(" 夏普比率 > 1.0: 策略表现优秀\n")
             elif metrics.get('年化夏普比率', 0) > 0.5:
                 f.write("  夏普比率 0.5-1.0: 策略表现良好\n")
             else:
                 f.write("❌ 夏普比率 < 0.5: 策略风险调整收益偏低\n")
 
             if metrics.get('最大回撤', 0) > -0.20:
-                f.write("✅ 最大回撤 < 20%: 风险控制良好\n")
+                f.write(" 最大回撤 < 20%: 风险控制良好\n")
             elif metrics.get('最大回撤', 0) > -0.30:
                 f.write("  最大回撤 20%-30%: 风险控制一般\n")
             else:
                 f.write("❌ 最大回撤 > 30%: 风险控制需要改进\n")
 
-        print(f"✅ 详细回测报告已保存: {filepath}")
+        print(f" 详细回测报告已保存: {filepath}")
 
     except Exception as e:
         print(f"保存回测报告失败: {e}")
@@ -7652,7 +7652,7 @@ def plot_simple_backtest_results(backtest_results, timestamp):
         plt.savefig(plot_file, dpi=300, bbox_inches='tight')
         plt.show()
 
-        print(f"✅ 回测图表已保存: {plot_file}")
+        print(f" 回测图表已保存: {plot_file}")
 
     except Exception as e:
         print(f"绘制图表时出错: {e}")
@@ -7678,7 +7678,7 @@ if __name__ == "__main__":
             print("└─ 回测未执行或失败，未生成回测结果文件")
 
         # 打印优化效果 - 修复：先检查backtest_results是否存在
-        print("\n🔧 优化效果总结:")
+        print("\n 优化效果总结:")
 
         # 安全地获取缓存命中率
         cache_hit_rate = 0
@@ -7686,12 +7686,12 @@ if __name__ == "__main__":
                 'cache_stats' in result['backtest_results']):
             cache_hit_rate = result['backtest_results']['cache_stats'].get('hit_rate', 0)
 
-        print(f"   1. ✅ 交易成本缓存命中率: {cache_hit_rate:.2%}")
-        print("   2. ✅ 仓位管理器确保单只股票不超5%限制")
-        print("   3. ✅ 增加最小持有期(5天)，减少日内交易")
-        print("   4. ✅ 调整调仓频率为每季度，降低换手率")
-        print("   5. ✅ 优化止损止盈阈值，减少无效交易")
-        print("   6. ✅ 限制每日交易次数，避免过度交易")
+        print(f"   1.  交易成本缓存命中率: {cache_hit_rate:.2%}")
+        print("   2.  仓位管理器确保单只股票不超5%限制")
+        print("   3.  增加最小持有期(5天)，减少日内交易")
+        print("   4.  调整调仓频率为每季度，降低换手率")
+        print("   5.  优化止损止盈阈值，减少无效交易")
+        print("   6.  限制每日交易次数，避免过度交易")
 
         # 只有在backtest_results存在时才打印关键指标
         if result.get('backtest_results') is not None:
