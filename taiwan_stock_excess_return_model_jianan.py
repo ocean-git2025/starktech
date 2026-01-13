@@ -58,7 +58,7 @@ for font in chinese_fonts:
         print(f"  字体 {font} 不可用，尝试下一个...")
         continue
 else:
-    print("❌ 警告：未找到合适的中文字体，图表中文字符可能显示为方框")
+    print(" 警告：未找到合适的中文字体，图表中文字符可能显示为方框")
 
 # 设置图表默认参数
 plt.rcParams['figure.figsize'] = (12, 8)  # 默认图表大小
@@ -1177,20 +1177,20 @@ def validate_price_data(df):
     在进行技术指标和收益率计算前，确保数据是有效的。
     """
     if df.empty:
-        print("❌ 错误：价格数据为空。")
+        print(" 错误：价格数据为空。")
         return False
 
     # 检查关键列是否存在
     required_cols = ['close', 'stock_code', 'date']
     missing_cols = [col for col in required_cols if col not in df.columns]
     if missing_cols:
-        print(f"❌ 错误：价格数据缺少必要的列: {missing_cols}")
+        print(f" 错误：价格数据缺少必要的列: {missing_cols}")
         return False
 
     # 检查 'close' 列是否有足够的非空值
     non_null_close_count = df['close'].notna().sum()
     if non_null_close_count < 100:  # 假设至少需要100个有效收盘价
-        print(f"❌ 错误：'close' 列的有效数据点太少 ({non_null_close_count} 个)。")
+        print(f" 错误：'close' 列的有效数据点太少 ({non_null_close_count} 个)。")
         return False
 
     # 检查价格是否为正数
@@ -1732,7 +1732,7 @@ def load_and_preprocess_data():
             print(f"平均收益率: {future_returns.mean():.4f}")
 
     except Exception as e:
-        print(f"❌ 未来收益率计算失败: {e}")
+        print(f" 未来收益率计算失败: {e}")
         import traceback
         traceback.print_exc()
         return None
@@ -3101,7 +3101,7 @@ def calculate_future_returns_and_labels(df, days=FUTURE_DAYS):
             print(f"  正样本比例: {df_fixed['label'].mean():.2%}")
 
             if return_diff < 0.01:
-                print("❌ 标签区分度不足，尝试调整...")
+                print(" 标签区分度不足，尝试调整...")
                 # 使用更严格的分位数
                 try:
                     df_fixed = df_fixed.groupby('date', group_keys=False).apply(
@@ -3115,7 +3115,7 @@ def calculate_future_returns_and_labels(df, days=FUTURE_DAYS):
                 except Exception as e:
                     print(f"调整失败: {e}")
         else:
-            print("❌ 无法验证标签有效性：缺少正样本或负样本")
+            print(" 无法验证标签有效性：缺少正样本或负样本")
 
     print(f"标签计算完成! 正样本比例: {df_fixed['label'].mean():.2%}")
     return df_fixed
@@ -6531,7 +6531,7 @@ def generate_html_report(factors, model_performance, backtest_summary):
     # 优化建议
     recommendations_html = ''
     for rec in backtest_summary.get('report', {}).get('recommendations', []):
-        recommendations_html += f'<div class="recommendation">📌 {rec}</div>'
+        recommendations_html += f'<div class="recommendation"> {rec}</div>'
 
     # 填充模板
     html_content = html_template.format(
@@ -6735,7 +6735,7 @@ def quick_test_lightgbm():
 
     # 1. 尝试直接加载预合并文件
     if not os.path.exists(PRE_MERGED_FILE):
-        print(f"❌ 预合并文件不存在: {PRE_MERGED_FILE}")
+        print(f" 预合并文件不存在: {PRE_MERGED_FILE}")
         print("请先运行完整流程生成预合并文件")
         return None
 
@@ -6931,7 +6931,7 @@ def quick_test_lightgbm():
     # ====================== 原有代码（调用accuracy_score） ======================
     # 注意：如果y_pred是异常值，可先加判断避免程序直接崩溃
     if not isinstance(y_pred, (np.ndarray, list, pd.Series, pd.DataFrame)):
-        print(f"❌ 警告：y_pred不是数组类数据，值为 {y_pred}，跳过accuracy_score计算")
+        print(f" 警告：y_pred不是数组类数据，值为 {y_pred}，跳过accuracy_score计算")
         accuracy = np.nan  # 用NaN标记无效值
     else:
         accuracy = accuracy_score(y_test, y_pred)
@@ -7070,13 +7070,13 @@ def main():
                     print(f"时间范围: {df['date'].min()} 到 {df['date'].max()}")
                     print(f"股票数量: {df['stock_code'].nunique()}")
                 else:
-                    print(f"❌ 预合并文件格式错误")
+                    print(f" 预合并文件格式错误")
                     return None
             except Exception as e:
                 print(f"预合并文件加载失败: {e}")
                 return None
         else:
-            print(f"❌ 预合并文件不存在: {PRE_MERGED_FILE}")
+            print(f" 预合并文件不存在: {PRE_MERGED_FILE}")
             print("请先运行数据预处理流程")
             return None
 
@@ -7084,7 +7084,7 @@ def main():
         print_section("步骤2: 检查收益率数据")
 
         if 'future_return' not in df.columns:
-            print("❌ 数据中没有future_return列")
+            print(" 数据中没有future_return列")
             return None
 
         # 检查收益率有效性
@@ -7136,7 +7136,7 @@ def main():
 
         modeling_df = prepare_modeling_data(df, feature_cols)
         if modeling_df.empty:
-            print("❌ 建模数据为空")
+            print(" 建模数据为空")
             return None
 
         print(f"建模数据统计:")
@@ -7152,7 +7152,7 @@ def main():
         )
 
         if data_split[0] is None:
-            print("❌ 数据集划分失败")
+            print(" 数据集划分失败")
             return None
 
         X_train, X_val, X_test, y_train, y_val, y_test, train_df, val_df, test_df = data_split
@@ -7173,7 +7173,7 @@ def main():
         )
 
         if not models:
-            print("❌ 模型训练失败")
+            print(" 模型训练失败")
             return None
 
         print(f" 模型训练完成:")
@@ -7186,7 +7186,7 @@ def main():
         daily_selected_df = generate_daily_selected_stocks(test_df, predictions, probabilities, top_n=10)
 
         if daily_selected_df.empty:
-            print("❌ 选股列表生成失败")
+            print(" 选股列表生成失败")
             return None
 
         print(f" 选股列表生成完成:")
@@ -7311,7 +7311,7 @@ def main():
                     except Exception as e:
                         print(f"图表绘制失败: {e}")
                 else:
-                    print("❌ 回测失败")
+                    print(" 回测失败")
                     backtest_results = {
                         'metrics': {},
                         'trading_stats': {},
@@ -7319,7 +7319,7 @@ def main():
                         'trading_records': []
                     }
             else:
-                print("❌ 选股数据缺少必要的列")
+                print(" 选股数据缺少必要的列")
                 backtest_results = {
                     'metrics': {},
                     'trading_stats': {},
@@ -7327,7 +7327,7 @@ def main():
                     'trading_records': []
                 }
         else:
-            print("❌ 选股数据为空，无法执行回测")
+            print(" 选股数据为空，无法执行回测")
             backtest_results = {
                 'metrics': {},
                 'trading_stats': {},
@@ -7571,14 +7571,14 @@ def save_backtest_report(metrics, filepath):
             elif metrics.get('年化夏普比率', 0) > 0.5:
                 f.write("  夏普比率 0.5-1.0: 策略表现良好\n")
             else:
-                f.write("❌ 夏普比率 < 0.5: 策略风险调整收益偏低\n")
+                f.write(" 夏普比率 < 0.5: 策略风险调整收益偏低\n")
 
             if metrics.get('最大回撤', 0) > -0.20:
                 f.write(" 最大回撤 < 20%: 风险控制良好\n")
             elif metrics.get('最大回撤', 0) > -0.30:
                 f.write("  最大回撤 20%-30%: 风险控制一般\n")
             else:
-                f.write("❌ 最大回撤 > 30%: 风险控制需要改进\n")
+                f.write(" 最大回撤 > 30%: 风险控制需要改进\n")
 
         print(f" 详细回测报告已保存: {filepath}")
 
