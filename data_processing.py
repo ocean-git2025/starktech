@@ -8,7 +8,7 @@ import os
 # --------------------------
 def get_project_paths():
     """获取项目所有关键路径，统一管理"""
-    project_root = r"D:\mypython\starktech\starktech_model_evaluation"
+    project_root = r"D:\XX\XX\XX" # 换成本地文件夹
     raw_dir = os.path.join(project_root, "raw")
     processed_dir = os.path.join(project_root, "processed")
 

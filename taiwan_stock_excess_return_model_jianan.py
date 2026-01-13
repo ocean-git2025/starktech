@@ -33,7 +33,37 @@ import shap
 import joblib
 import json
 from collections import defaultdict
+import matplotlib
 
+# 尝试使用不同的中文字体（按优先级顺序）
+chinese_fonts = [
+    'Microsoft YaHei',  # Windows 系统
+    'SimHei',           # Windows 系统
+    'Heiti TC',         # macOS 系统
+    'PingFang SC',      # macOS 系统
+    'WenQuanYi Zen Hei', # Linux 系统
+    'DejaVu Sans'       # 备用字体
+]
+
+# 设置字体
+for font in chinese_fonts:
+    try:
+        matplotlib.rcParams['font.sans-serif'] = [font]
+        matplotlib.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
+        # 测试字体是否可用
+        test_font = matplotlib.font_manager.FontProperties(fname=None, family=font)
+        print(f" 成功设置中文字体: {font}")
+        break
+    except:
+        print(f"  字体 {font} 不可用，尝试下一个...")
+        continue
+else:
+    print(" 警告：未找到合适的中文字体，图表中文字符可能显示为方框")
+
+# 设置图表默认参数
+plt.rcParams['figure.figsize'] = (12, 8)  # 默认图表大小
+plt.rcParams['figure.dpi'] = 100          # 默认分辨率
+plt.rcParams['savefig.dpi'] = 300         # 保存图片分辨率
 # ==================== 参数设置 ====================
 FUTURE_DAYS = 20
 LOOKBACK_DAYS = 30
@@ -624,7 +654,7 @@ def generate_daily_selected_stocks(test_df, predictions, probabilities, top_n=10
         # 检查是否有重复选股
         duplicate_check = result_df.groupby(['交易日', '股票代码']).size()
         if (duplicate_check > 1).any():
-            print("⚠️ 警告：发现重复选股记录")
+            print(" 警告：发现重复选股记录")
             duplicates = duplicate_check[duplicate_check > 1]
             print(f"重复记录数量: {len(duplicates)}")
 
@@ -1024,26 +1054,26 @@ def print_backtest_metrics(metrics):
 
     # 打印区间信息
     if '起始日期' in metrics and '结束日期' in metrics:
-        print(f"📅 回测区间: {metrics['起始日期']} 至 {metrics['结束日期']}")
+        print(f" 回测区间: {metrics['起始日期']} 至 {metrics['结束日期']}")
         print(f"   回测天数: {metrics.get('回测天数', 0)} 天")
         print(f"   交易日数: {metrics.get('交易日数', 0)} 天")
 
     # 打印收益率指标
-    print(f"\n📈 收益率指标:")
+    print(f"\n 收益率指标:")
     if '总收益率' in metrics:
         print(f"   总收益率: {metrics['总收益率']:.2%}")
     if '年化收益率' in metrics:
         print(f"   年化收益率: {metrics['年化收益率']:.2%}")
 
     # 打印风险指标
-    print(f"\n⚠️  风险指标:")
+    print(f"\n  风险指标:")
     if '年化波动率' in metrics:
         print(f"   年化波动率: {metrics['年化波动率']:.2%}")
     if '最大回撤' in metrics:
         print(f"   最大回撤: {metrics['最大回撤']:.2%}")
 
     # 打印风险调整收益指标
-    print(f"\n⚖️  风险调整收益指标:")
+    print(f"\n  风险调整收益指标:")
     if '年化夏普比率' in metrics:
         print(f"   年化夏普比率: {metrics['年化夏普比率']:.2f}")
     if '卡玛比率' in metrics:
@@ -1052,14 +1082,14 @@ def print_backtest_metrics(metrics):
         print(f"   信息比率: {metrics['信息比率']:.2f}")
 
     # 打印交易统计指标
-    print(f"\n💹 交易统计指标:")
+    print(f"\n 交易统计指标:")
     if '胜率' in metrics:
         print(f"   胜率: {metrics['胜率']:.2%}")
     if '盈亏比' in metrics:
         print(f"   盈亏比: {metrics['盈亏比']:.2f}")
 
     # 打印净值信息
-    print(f"\n💰 净值信息:")
+    print(f"\n 净值信息:")
     if '初始净值' in metrics and metrics['初始净值'] > 0:
         print(f"   初始净值: {metrics['初始净值']:,.2f}")
     if '最终净值' in metrics and metrics['最终净值'] > 0:
@@ -1084,23 +1114,23 @@ def load_saved_data():
 
     if os.path.exists(LGB_FEATURE_IMPORTANCE_FILE):
         saved_data['lgb_feature_importance'] = pd.read_csv(LGB_FEATURE_IMPORTANCE_FILE)
-        print(f"✅ 已加载LightGBM特征重要性: {LGB_FEATURE_IMPORTANCE_FILE}")
+        print(f" 已加载LightGBM特征重要性: {LGB_FEATURE_IMPORTANCE_FILE}")
 
     if os.path.exists(CORE_FACTORS_FILE):
         saved_data['core_factors'] = pd.read_csv(CORE_FACTORS_FILE)
-        print(f"✅ 已加载核心因子列表: {CORE_FACTORS_FILE}")
+        print(f" 已加载核心因子列表: {CORE_FACTORS_FILE}")
 
     if os.path.exists(FACTOR_IC_METRICS_FILE):
         saved_data['factor_ic_metrics'] = pd.read_csv(FACTOR_IC_METRICS_FILE)
-        print(f"✅ 已加载因子IC指标: {FACTOR_IC_METRICS_FILE}")
+        print(f" 已加载因子IC指标: {FACTOR_IC_METRICS_FILE}")
 
     if os.path.exists(FINANCIAL_IC_FILE):
         saved_data['financial_ic'] = pd.read_csv(FINANCIAL_IC_FILE)
-        print(f"✅ 已加载财务因子IC指标: {FINANCIAL_IC_FILE}")
+        print(f" 已加载财务因子IC指标: {FINANCIAL_IC_FILE}")
 
     if os.path.exists(TECHNICAL_IC_FILE):
         saved_data['technical_ic'] = pd.read_csv(TECHNICAL_IC_FILE)
-        print(f"✅ 已加载技术因子IC指标: {TECHNICAL_IC_FILE}")
+        print(f" 已加载技术因子IC指标: {TECHNICAL_IC_FILE}")
 
     return saved_data
 
@@ -1112,7 +1142,7 @@ def save_factor_data(feature_importance_lgb, core_factors, ic_df=None,
     # 保存LightGBM特征重要性
     if feature_importance_lgb is not None and not feature_importance_lgb.empty:
         feature_importance_lgb.to_csv(LGB_FEATURE_IMPORTANCE_FILE, index=False)
-        print(f"✅ LightGBM特征重要性已保存: {LGB_FEATURE_IMPORTANCE_FILE}")
+        print(f" LightGBM特征重要性已保存: {LGB_FEATURE_IMPORTANCE_FILE}")
 
     # 保存核心因子列表
     if core_factors is not None:
@@ -1121,22 +1151,22 @@ def save_factor_data(feature_importance_lgb, core_factors, ic_df=None,
             'factor_type': ['财务因子' if col.startswith('fin_') else '技术因子' for col in core_factors]
         })
         core_factors_df.to_csv(CORE_FACTORS_FILE, index=False)
-        print(f"✅ 核心因子列表已保存: {CORE_FACTORS_FILE}")
+        print(f" 核心因子列表已保存: {CORE_FACTORS_FILE}")
 
     # 保存因子IC指标
     if ic_df is not None and not ic_df.empty:
         ic_df.to_csv(FACTOR_IC_METRICS_FILE, index=False)
-        print(f"✅ 因子IC指标已保存: {FACTOR_IC_METRICS_FILE}")
+        print(f" 因子IC指标已保存: {FACTOR_IC_METRICS_FILE}")
 
     # 保存财务因子IC指标
     if financial_ic_df is not None and not financial_ic_df.empty:
         financial_ic_df.to_csv(FINANCIAL_IC_FILE, index=False)
-        print(f"✅ 财务因子IC指标已保存: {FINANCIAL_IC_FILE}")
+        print(f" 财务因子IC指标已保存: {FINANCIAL_IC_FILE}")
 
     # 保存技术因子IC指标
     if technical_ic_df is not None and not technical_ic_df.empty:
         technical_ic_df.to_csv(TECHNICAL_IC_FILE, index=False)
-        print(f"✅ 技术因子IC指标已保存: {TECHNICAL_IC_FILE}")
+        print(f" 技术因子IC指标已保存: {TECHNICAL_IC_FILE}")
 
 
 # ==================== 辅助函数 ====================
@@ -1147,29 +1177,29 @@ def validate_price_data(df):
     在进行技术指标和收益率计算前，确保数据是有效的。
     """
     if df.empty:
-        print("❌ 错误：价格数据为空。")
+        print(" 错误：价格数据为空。")
         return False
 
     # 检查关键列是否存在
     required_cols = ['close', 'stock_code', 'date']
     missing_cols = [col for col in required_cols if col not in df.columns]
     if missing_cols:
-        print(f"❌ 错误：价格数据缺少必要的列: {missing_cols}")
+        print(f" 错误：价格数据缺少必要的列: {missing_cols}")
         return False
 
     # 检查 'close' 列是否有足够的非空值
     non_null_close_count = df['close'].notna().sum()
     if non_null_close_count < 100:  # 假设至少需要100个有效收盘价
-        print(f"❌ 错误：'close' 列的有效数据点太少 ({non_null_close_count} 个)。")
+        print(f" 错误：'close' 列的有效数据点太少 ({non_null_close_count} 个)。")
         return False
 
     # 检查价格是否为正数
     invalid_price_count = (df['close'] <= 0).sum()
     if invalid_price_count > 0:
-        print(f"⚠️ 警告：发现 {invalid_price_count} 个非正价格。这些行将在后续步骤中被移除。")
+        print(f" 警告：发现 {invalid_price_count} 个非正价格。这些行将在后续步骤中被移除。")
         # 这里不直接返回False，因为后续步骤可以处理，但发出警告
 
-    print("✅ 价格数据验证通过。")
+    print(" 价格数据验证通过。")
     return True
 
 
@@ -1702,7 +1732,7 @@ def load_and_preprocess_data():
             print(f"平均收益率: {future_returns.mean():.4f}")
 
     except Exception as e:
-        print(f"❌ 未来收益率计算失败: {e}")
+        print(f" 未来收益率计算失败: {e}")
         import traceback
         traceback.print_exc()
         return None
@@ -2729,7 +2759,7 @@ def calculate_technical_indicators(df):
 
     # 验证close列的数据类型
     if not pd.api.types.is_numeric_dtype(df_tech['close']):
-        print("⚠️ close列不是数值类型，尝试转换...")
+        print(" close列不是数值类型，尝试转换...")
         df_tech['close'] = pd.to_numeric(df_tech['close'], errors='coerce')
 
     # 移除close中的无效值
@@ -2817,7 +2847,7 @@ def calculate_technical_indicators(df):
 
             # 验证成交量数据
             if not pd.api.types.is_numeric_dtype(volume):
-                print("⚠️ volume列不是数值类型，尝试转换...")
+                print(" volume列不是数值类型，尝试转换...")
                 volume = pd.to_numeric(volume, errors='coerce')
                 df_tech['volume'] = volume
 
@@ -2837,7 +2867,7 @@ def calculate_technical_indicators(df):
 
             print("✓ 因子5生成完成")
         else:
-            print("⚠️ 缺少成交量数据，使用价格强度作为替代因子...")
+            print(" 缺少成交量数据，使用价格强度作为替代因子...")
             # 如果有high/low数据，计算价格强度
             if all(col in df_tech.columns for col in ['high', 'low']):
                 high = df_tech['high']
@@ -2846,7 +2876,7 @@ def calculate_technical_indicators(df):
                 # 验证high, low数据
                 for col in ['high', 'low']:
                     if not pd.api.types.is_numeric_dtype(df_tech[col]):
-                        print(f"⚠️ {col}列不是数值类型，尝试转换...")
+                        print(f" {col}列不是数值类型，尝试转换...")
                         df_tech[col] = pd.to_numeric(df_tech[col], errors='coerce')
 
                 # 当日价格强度
@@ -2862,7 +2892,7 @@ def calculate_technical_indicators(df):
                 df_tech = df_tech.drop(columns=['price_strength'])
                 print("✓ 因子5（价格强度）生成完成")
             else:
-                print("⚠️ 也缺少high/low数据，使用加速度作为替代因子...")
+                print(" 也缺少high/low数据，使用加速度作为替代因子...")
                 # 计算价格加速度
                 df_tech['price_velocity'] = close_prices.diff()
                 df_tech['volume_ratio_5'] = df_tech['price_velocity'].diff()
@@ -2891,7 +2921,7 @@ def calculate_technical_indicators(df):
                 if non_na_ratio > 0.3 and unique_vals > 1:
                     valid_tech_cols.append(col)
                 else:
-                    print(f"⚠️ 特征 {col} 质量较低: 非空比例={non_na_ratio:.2%}, 唯一值数={unique_vals}")
+                    print(f" 特征 {col} 质量较低: 非空比例={non_na_ratio:.2%}, 唯一值数={unique_vals}")
 
         print_section("技术指标生成统计")
         print(f"目标生成技术因子: 5个")
@@ -3064,14 +3094,14 @@ def calculate_future_returns_and_labels(df, days=FUTURE_DAYS):
             negative_return = df_fixed[negative_mask]['future_return'].mean()
             return_diff = positive_return - negative_return
 
-            print("✅ 标签有效性验证:")
+            print(" 标签有效性验证:")
             print(f"  正样本平均收益: {positive_return:.6f} ({positive_return:.4%})")
             print(f"  负样本平均收益: {negative_return:.6f} ({negative_return:.4%})")
             print(f"  收益差异: {return_diff:.6f} ({return_diff:.4%})")
             print(f"  正样本比例: {df_fixed['label'].mean():.2%}")
 
             if return_diff < 0.01:
-                print("❌ 标签区分度不足，尝试调整...")
+                print(" 标签区分度不足，尝试调整...")
                 # 使用更严格的分位数
                 try:
                     df_fixed = df_fixed.groupby('date', group_keys=False).apply(
@@ -3085,7 +3115,7 @@ def calculate_future_returns_and_labels(df, days=FUTURE_DAYS):
                 except Exception as e:
                     print(f"调整失败: {e}")
         else:
-            print("❌ 无法验证标签有效性：缺少正样本或负样本")
+            print(" 无法验证标签有效性：缺少正样本或负样本")
 
     print(f"标签计算完成! 正样本比例: {df_fixed['label'].mean():.2%}")
     return df_fixed
@@ -4456,7 +4486,7 @@ def train_lightgbm_default(X_train, y_train, X_val, y_val, X_test, y_test, featu
 
         with open(rolling_cv_file, 'wb') as f:
             pickle.dump(rolling_cv_data_save, f, protocol=4)
-        print(f"✅ 滚动交叉验证数据已保存: {rolling_cv_file}")
+        print(f" 滚动交叉验证数据已保存: {rolling_cv_file}")
 
         # 单独保存集成模型
         model_file = f'lightgbm_ensemble_model_{timestamp}.pkl'
@@ -4470,7 +4500,7 @@ def train_lightgbm_default(X_train, y_train, X_val, y_val, X_test, y_test, featu
         }
         with open(model_file, 'wb') as f:
             pickle.dump(model_save_data, f, protocol=4)
-        print(f"✅ LightGBM集成模型已保存: {model_file}")
+        print(f" LightGBM集成模型已保存: {model_file}")
     else:
         # 原来的训练逻辑
         print("使用普通训练模式...")
@@ -4637,7 +4667,7 @@ def train_lightgbm_default(X_train, y_train, X_val, y_val, X_test, y_test, featu
         feature_importance = pd.DataFrame(columns=['feature', 'gain', 'importance_type'])
 
     # 可选：打印特征重要性信息，方便调试
-    print(f"✅ 特征重要性提取完成：")
+    print(f" 特征重要性提取完成：")
     print(f"   - 特征总数：{feature_num}")
     print(f"   - 有效特征重要性数量：{len(feature_importance)}")
     print(f"   - 前5个重要特征：\n{feature_importance.head()}")
@@ -5229,7 +5259,7 @@ def check_position_concentration(positions):
         weight = position_value / total_value if total_value > 0 else 0
 
         if weight > RISK_CONTROL['single_stock_limit']:
-            print(f"⚠️ 股票{stock_code}仓位{weight:.2%}超过限制{RISK_CONTROL['single_stock_limit']:.2%}")
+            print(f" 股票{stock_code}仓位{weight:.2%}超过限制{RISK_CONTROL['single_stock_limit']:.2%}")
             return False
 
     return True
@@ -5917,7 +5947,7 @@ def select_stocks_with_lightgbm_unified(X_train, y_train, X_test, test_df, featu
     top_stocks = results_sorted.head(n_select).copy()
     top_stocks['排名'] = range(1, len(top_stocks) + 1)
 
-    print(f"✅ LightGBM选股完成（前{top_percent:.0%}逻辑）")
+    print(f" LightGBM选股完成（前{top_percent:.0%}逻辑）")
     print(f"  总股票数: {n_stocks}只")
     print(f"  应选前{top_percent:.0%}: {int(n_stocks * top_percent)}只")
     print(f"  实际选择: {n_select}只（最多{top_k}只）")
@@ -5964,7 +5994,7 @@ class RiskControlManager:
         """检查单只股票仓位限制"""
         if target_weight > RISK_CONTROL['single_stock_limit']:
             print(
-                f"⚠️ 股票{stock_code}目标权重{target_weight:.2%}超过单只股票上限{RISK_CONTROL['single_stock_limit']:.2%}")
+                f" 股票{stock_code}目标权重{target_weight:.2%}超过单只股票上限{RISK_CONTROL['single_stock_limit']:.2%}")
             return RISK_CONTROL['single_stock_limit']
         return target_weight
 
@@ -6198,334 +6228,6 @@ class RiskControlManager:
 
         return total_value
 
-
-@timer_decorator
-def generate_final_output(feature_cols, model_results, backtest_results, core_factors=None):
-    """
-    生成最终输出结果
-    """
-    print_section("步骤6：结果输出与迭代优化")
-
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-
-    # 1. 最终因子列表
-    final_factors = {
-        'final_factors': feature_cols,
-        'financial_factors': [f for f in feature_cols if f.startswith('fin_')],
-        'technical_factors': [f for f in feature_cols if not f.startswith('fin_')],
-        'core_factors': core_factors if core_factors else feature_cols[:10]
-    }
-
-    # 保存因子列表
-    factors_file = f'final_factors_list_{timestamp}.json'
-    with open(factors_file, 'w', encoding='utf-8') as f:
-        json.dump(final_factors, f, indent=2, ensure_ascii=False)
-    print(f"✅ 最终因子列表已保存: {factors_file}")
-
-    # 2. 模型性能输出
-    model_performance = {
-        'training_date': timestamp,
-        'models': {}
-    }
-
-    for model_name, results in model_results.items():
-        model_performance['models'][model_name] = {
-            'accuracy': results.get('test_accuracy', 0),
-            'precision': results.get('test_precision', 0),
-            'recall': results.get('test_recall', 0),
-            'f1_score': results.get('test_f1', 0),
-            'roc_auc': results.get('test_roc_auc', 0)
-        }
-
-    # 保存模型性能
-    performance_file = f'model_performance_{timestamp}.json'
-    with open(performance_file, 'w', encoding='utf-8') as f:
-        json.dump(model_performance, f, indent=2)
-    print(f"✅ 模型性能指标已保存: {performance_file}")
-
-    # 3. 回测结果输出
-    if backtest_results:
-        backtest_summary = {
-            'backtest_period': {
-                'start_date': str(backtest_results['portfolio_values'][0]['date']),
-                'end_date': str(backtest_results['portfolio_values'][-1]['date']),
-                'days': backtest_results['metrics'].get('回测天数', 0)
-            },
-            'performance_metrics': {
-                k: (f"{v:.2%}" if isinstance(v, float) and k.endswith('率') else
-                    f"{v:.2f}" if isinstance(v, float) else v)
-                for k, v in backtest_results['metrics'].items()
-            },
-            'trading_statistics': backtest_results['trading_stats'],
-            'report': backtest_results.get('report', {})
-        }
-
-        # 保存回测结果
-        backtest_file = f'backtest_results_detailed_{timestamp}.json'
-        with open(backtest_file, 'w', encoding='utf-8') as f:
-            json.dump(backtest_summary, f, indent=2, ensure_ascii=False)
-        print(f"✅ 详细回测结果已保存: {backtest_file}")
-
-        # 生成HTML报告
-        html_report = generate_html_report(final_factors, model_performance, backtest_summary)
-        html_file = f'final_report_{timestamp}.html'
-        with open(html_file, 'w', encoding='utf-8') as f:
-            f.write(html_report)
-        print(f"✅ HTML综合报告已保存: {html_file}")
-
-    # 4. 迭代优化建议
-    optimization_suggestions = generate_optimization_suggestions(
-        final_factors, model_performance, backtest_results
-    )
-
-    suggestions_file = f'optimization_suggestions_{timestamp}.txt'
-    with open(suggestions_file, 'w', encoding='utf-8') as f:
-        f.write("=" * 60 + "\n")
-        f.write("迭代优化建议\n")
-        f.write("=" * 60 + "\n\n")
-        for suggestion in optimization_suggestions:
-            f.write(f"• {suggestion}\n")
-
-    print(f"✅ 迭代优化建议已保存: {suggestions_file}")
-
-    return {
-        'factors_file': factors_file,
-        'performance_file': performance_file,
-        'backtest_file': backtest_file if backtest_results else None,
-        'html_file': html_file if backtest_results else None,
-        'suggestions_file': suggestions_file
-    }
-
-
-def generate_html_report(factors, model_performance, backtest_summary):
-    """生成HTML格式的综合报告"""
-
-    html_template = '''
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>股票选股策略回测报告</title>
-        <style>
-            body {{ font-family: Arial, sans-serif; margin: 40px; }}
-            .section {{ margin-bottom: 30px; border: 1px solid #ddd; padding: 20px; border-radius: 5px; }}
-            h1, h2, h3 {{ color: #333; }}
-            table {{ border-collapse: collapse; width: 100%; margin-bottom: 20px; }}
-            th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
-            th {{ background-color: #f2f2f2; }}
-            .metric {{ margin: 5px 0; }}
-            .pass {{ color: green; font-weight: bold; }}
-            .fail {{ color: red; font-weight: bold; }}
-            .recommendation {{ background-color: #fffacd; padding: 10px; margin: 10px 0; border-left: 4px solid #ffd700; }}
-        </style>
-    </head>
-    <body>
-        <h1>📊 股票选股策略回测报告</h1>
-        <p>生成时间: {timestamp}</p>
-
-        <div class="section">
-            <h2>1. 策略概览</h2>
-            <p><strong>回测期间:</strong> {start_date} 至 {end_date} ({days} 天)</p>
-            <p><strong>初始资金:</strong> {initial_capital:,.2f} 元</p>
-        </div>
-
-        <div class="section">
-            <h2>2. 因子配置</h2>
-            <h3>核心因子 ({core_count}个)</h3>
-            <ul>
-                {core_factors_list}
-            </ul>
-            <h3>财务因子 ({financial_count}个)</h3>
-            <ul>
-                {financial_factors_list}
-            </ul>
-            <h3>技术因子 ({technical_count}个)</h3>
-            <ul>
-                {technical_factors_list}
-            </ul>
-        </div>
-
-        <div class="section">
-            <h2>3. 模型性能</h2>
-            <table>
-                <tr>
-                    <th>模型</th>
-                    <th>准确率</th>
-                    <th>F1分数</th>
-                    <th>ROC-AUC</th>
-                    <th>精确率</th>
-                    <th>召回率</th>
-                </tr>
-                {model_rows}
-            </table>
-        </div>
-
-        <div class="section">
-            <h2>4. 回测绩效</h2>
-            <h3>4.1 核心指标</h3>
-            <table>
-                <tr>
-                    <th>指标</th>
-                    <th>数值</th>
-                    <th>目标</th>
-                    <th>状态</th>
-                </tr>
-                {metric_rows}
-            </table>
-
-            <h3>4.2 交易统计</h3>
-            <table>
-                {trading_rows}
-            </table>
-        </div>
-
-        <div class="section">
-            <h2>5. 风控合规</h2>
-            <table>
-                {compliance_rows}
-            </table>
-        </div>
-
-        <div class="section">
-            <h2>6. 优化建议</h2>
-            {recommendations}
-        </div>
-
-        <div class="section">
-            <h2>7. 迭代计划</h2>
-            <ol>
-                <li>增加更多财务指标，如现金流量比率、营运资本等</li>
-                <li>优化技术因子参数，测试不同时间窗口</li>
-                <li>引入市场情绪因子和资金流因子</li>
-                <li>测试不同机器学习算法的组合</li>
-                <li>优化交易成本模型，考虑实际交易限制</li>
-            </ol>
-        </div>
-    </body>
-    </html>
-    '''
-
-    # 准备数据
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    # 因子列表
-    core_factors_list = ''.join(f'<li>{factor}</li>' for factor in factors.get('core_factors', [])[:10])
-    financial_factors_list = ''.join(f'<li>{factor}</li>' for factor in factors.get('financial_factors', [])[:5])
-    technical_factors_list = ''.join(f'<li>{factor}</li>' for factor in factors.get('technical_factors', [])[:5])
-
-    # 模型性能行
-    model_rows = ''
-    for model_name, metrics in model_performance.get('models', {}).items():
-        model_rows += f'''
-        <tr>
-            <td>{model_name.upper()}</td>
-            <td>{metrics.get('accuracy', 0):.2%}</td>
-            <td>{metrics.get('f1_score', 0):.4f}</td>
-            <td>{metrics.get('roc_auc', 0):.4f}</td>
-            <td>{metrics.get('precision', 0):.4f}</td>
-            <td>{metrics.get('recall', 0):.4f}</td>
-        </tr>
-        '''
-
-    # 绩效指标行
-    metric_rows = ''
-    target_metrics = [
-        ('年化收益率', TARGET_METRICS['annual_return']),
-        ('夏普比率', TARGET_METRICS['sharpe_ratio']),
-        ('最大回撤', TARGET_METRICS['max_drawdown'])
-    ]
-
-    for metric_name, target_value in target_metrics:
-        actual_value = backtest_summary['performance_metrics'].get(metric_name, '0')
-        # ============ 修复：将字符串转换为浮点数 ============
-        actual_value_num = 0.0
-        try:
-            if isinstance(actual_value, str):
-                # 处理百分比字符串
-                if '%' in actual_value:
-                    # 移除百分号并转换为浮点数
-                    actual_value_num = float(actual_value.replace('%', '')) / 100.0
-                elif ':' in actual_value:
-                    # 处理其他格式，暂时设为0
-                    actual_value_num = 0.0
-                else:
-                    # 尝试直接转换为浮点数
-                    actual_value_num = float(actual_value)
-            else:
-                # 如果不是字符串，直接使用
-                actual_value_num = float(actual_value)
-        except (ValueError, TypeError) as e:
-            print(f"警告：无法转换指标值 '{actual_value}' 为浮点数: {e}")
-            actual_value_num = 0.0
-        # ============ 修复结束 ============
-
-        # 根据指标类型决定比较方式
-        if metric_name == '最大回撤':
-            # 最大回撤是负数，比较时取绝对值
-            actual_for_compare = abs(actual_value_num)
-            target_for_compare = abs(target_value)
-            status_class = 'pass' if actual_for_compare <= target_for_compare else 'fail'
-            status_text = '✓ 达标' if actual_for_compare <= target_for_compare else '✗ 未达标'
-        else:
-            # 其他指标：实际值 >= 目标值
-            status_class = 'pass' if actual_value_num >= target_value else 'fail'
-            status_text = '✓ 达标' if actual_value_num >= target_value else '✗ 未达标'
-
-        # ============ 修复：避免在f-string格式说明符中使用条件表达式 ============
-        # 先根据指标名称决定目标值的显示格式
-        if metric_name != '夏普比率':
-            target_str = f"{target_value:.2%}"
-        else:
-            target_str = f"{target_value:.2f}"
-
-        metric_rows += f'''
-         <tr>
-             <td>{metric_name}</td>
-             <td>{actual_value}</td>
-             <td>{target_str}</td>
-             <td class="{status_class}">{status_text}</td>
-         </tr>
-        '''
-        # ============ 修复结束 ============
-
-    # 交易统计行
-    trading_rows = ''
-    for key, value in backtest_summary.get('trading_statistics', {}).items():
-        trading_rows += f'<tr><td>{key}</td><td>{value}</td></tr>'
-
-    # 合规检查行
-    compliance_rows = ''
-    for key, value in backtest_summary.get('report', {}).get('compliance_check', {}).items():
-        compliance_rows += f'<tr><td>{key}</td><td>{value}</td></tr>'
-
-    # 优化建议
-    recommendations_html = ''
-    for rec in backtest_summary.get('report', {}).get('recommendations', []):
-        recommendations_html += f'<div class="recommendation">📌 {rec}</div>'
-
-    # 填充模板
-    html_content = html_template.format(
-        timestamp=timestamp,
-        start_date=backtest_summary['backtest_period']['start_date'],
-        end_date=backtest_summary['backtest_period']['end_date'],
-        days=backtest_summary['backtest_period']['days'],
-        initial_capital=INITIAL_CAPITAL,
-        core_count=len(factors.get('core_factors', [])),
-        core_factors_list=core_factors_list,
-        financial_count=len(factors.get('financial_factors', [])),
-        financial_factors_list=financial_factors_list,
-        technical_count=len(factors.get('technical_factors', [])),
-        technical_factors_list=technical_factors_list,
-        model_rows=model_rows,
-        metric_rows=metric_rows,
-        trading_rows=trading_rows,
-        compliance_rows=compliance_rows,
-        recommendations=recommendations_html
-    )
-
-    return html_content
-
-
 def plot_detailed_backtest_results(backtest_results, save_path=None):
     """绘制详细回测结果图表"""
 
@@ -6705,7 +6407,7 @@ def quick_test_lightgbm():
 
     # 1. 尝试直接加载预合并文件
     if not os.path.exists(PRE_MERGED_FILE):
-        print(f"❌ 预合并文件不存在: {PRE_MERGED_FILE}")
+        print(f" 预合并文件不存在: {PRE_MERGED_FILE}")
         print("请先运行完整流程生成预合并文件")
         return None
 
@@ -6728,7 +6430,7 @@ def quick_test_lightgbm():
             print(f"未知数据格式: {type(data)}")
             return None
 
-        print(f"✅ 数据加载成功: {df.shape}")
+        print(f" 数据加载成功: {df.shape}")
         print(f"时间范围: {df['date'].min()} 到 {df['date'].max()}")
         print(f"股票数量: {df['stock_code'].nunique()}")
         print(f"原始特征数量: {len(feature_cols)}")
@@ -6892,16 +6594,16 @@ def quick_test_lightgbm():
                 "y_proba": y_proba  # 新增预测概率列，更全面
             })
             df.to_csv(os.path.join(save_dir, "test_pred_true.csv"), index=False, encoding="utf-8")
-            print("✅ 真实标签、预测标签和预测概率已保存为csv文件")
+            print(" 真实标签、预测标签和预测概率已保存为csv文件")
         else:
-            print("⚠️ 无法保存csv：y_test或y_pred不是数组/列表类型")
+            print(" 无法保存csv：y_test或y_pred不是数组/列表类型")
     except Exception as e:
-        print(f"⚠️ 保存csv失败: {e}")
+        print(f" 保存csv失败: {e}")
 
     # ====================== 原有代码（调用accuracy_score） ======================
     # 注意：如果y_pred是异常值，可先加判断避免程序直接崩溃
     if not isinstance(y_pred, (np.ndarray, list, pd.Series, pd.DataFrame)):
-        print(f"❌ 警告：y_pred不是数组类数据，值为 {y_pred}，跳过accuracy_score计算")
+        print(f" 警告：y_pred不是数组类数据，值为 {y_pred}，跳过accuracy_score计算")
         accuracy = np.nan  # 用NaN标记无效值
     else:
         accuracy = accuracy_score(y_test, y_pred)
@@ -6913,7 +6615,7 @@ def quick_test_lightgbm():
     f1 = f1_score(y_test, y_pred, zero_division=0)
     roc_auc = roc_auc_score(y_test, y_proba)
 
-    print("📊 测试集性能:")
+    print(" 测试集性能:")
     print(f"  准确率 (Accuracy): {accuracy:.4f}")
     print(f"  精确率 (Precision): {precision:.4f}")
     print(f"  召回率 (Recall): {recall:.4f}")
@@ -6951,7 +6653,7 @@ def quick_test_lightgbm():
                 'roc_auc': roc_auc
             }
         }, f)
-    print(f"✅ LightGBM模型已保存: {model_file}")
+    print(f" LightGBM模型已保存: {model_file}")
 
     # 保存结果到文本文件
     result_file = f'lightgbm_test_results_{timestamp}.txt'
@@ -6975,7 +6677,7 @@ def quick_test_lightgbm():
         for idx, row in feature_importance.head(10).iterrows():
             f.write(f"  {row['feature']}: {row['importance']:.4f}\n")
 
-    print(f"✅ 测试结果已保存: {result_file}")
+    print(f" 测试结果已保存: {result_file}")
 
     return {
         'model': lgb_model,
@@ -7003,7 +6705,7 @@ def main():
     print(f"强制重新计算因子: {'是' if FORCE_RECOMPUTE_FACTORS else '否'}")
 
     # 打印优化参数
-    print("\n🎯 优化参数配置:")
+    print("\n 优化参数配置:")
     print(f"  最大持仓数量: {TOP_N_HOLDINGS}只")
     print(f"  调仓频率: {REBALANCE_FREQUENCY}")
     print(f"  最小持有天数: {RISK_CONTROL['min_holding_days']}天")
@@ -7036,17 +6738,17 @@ def main():
 
                 if isinstance(data, tuple) and len(data) == 2:
                     df, feature_cols = data
-                    print(f"✅ 预合并数据加载成功: {df.shape}")
+                    print(f" 预合并数据加载成功: {df.shape}")
                     print(f"时间范围: {df['date'].min()} 到 {df['date'].max()}")
                     print(f"股票数量: {df['stock_code'].nunique()}")
                 else:
-                    print(f"❌ 预合并文件格式错误")
+                    print(f" 预合并文件格式错误")
                     return None
             except Exception as e:
                 print(f"预合并文件加载失败: {e}")
                 return None
         else:
-            print(f"❌ 预合并文件不存在: {PRE_MERGED_FILE}")
+            print(f" 预合并文件不存在: {PRE_MERGED_FILE}")
             print("请先运行数据预处理流程")
             return None
 
@@ -7054,7 +6756,7 @@ def main():
         print_section("步骤2: 检查收益率数据")
 
         if 'future_return' not in df.columns:
-            print("❌ 数据中没有future_return列")
+            print(" 数据中没有future_return列")
             return None
 
         # 检查收益率有效性
@@ -7066,7 +6768,7 @@ def main():
         print(f"  收益率范围: {valid_returns.min():.4f} 到 {valid_returns.max():.4f}")
 
         if inf_count > 0:
-            print("⚠️ 发现inf值，进行修复...")
+            print(" 发现inf值，进行修复...")
             df['future_return'] = df['future_return'].replace([np.inf, -np.inf], np.nan)
             df = df.dropna(subset=['future_return'])
             print(f"修复后有效样本: {len(df):,}")
@@ -7106,7 +6808,7 @@ def main():
 
         modeling_df = prepare_modeling_data(df, feature_cols)
         if modeling_df.empty:
-            print("❌ 建模数据为空")
+            print(" 建模数据为空")
             return None
 
         print(f"建模数据统计:")
@@ -7122,7 +6824,7 @@ def main():
         )
 
         if data_split[0] is None:
-            print("❌ 数据集划分失败")
+            print(" 数据集划分失败")
             return None
 
         X_train, X_val, X_test, y_train, y_val, y_test, train_df, val_df, test_df = data_split
@@ -7143,10 +6845,10 @@ def main():
         )
 
         if not models:
-            print("❌ 模型训练失败")
+            print(" 模型训练失败")
             return None
 
-        print(f"✅ 模型训练完成:")
+        print(f" 模型训练完成:")
         for model_name, result in results.items():
             print(f"  {model_name.upper()}: F1={result['test_f1']:.4f}, AUC={result['test_roc_auc']:.4f}")
 
@@ -7156,10 +6858,10 @@ def main():
         daily_selected_df = generate_daily_selected_stocks(test_df, predictions, probabilities, top_n=10)
 
         if daily_selected_df.empty:
-            print("❌ 选股列表生成失败")
+            print(" 选股列表生成失败")
             return None
 
-        print(f"✅ 选股列表生成完成:")
+        print(f" 选股列表生成完成:")
         print(f"  总选股记录: {len(daily_selected_df):,}")
         print(f"  平均每日选股: {daily_selected_df.groupby('交易日').size().mean():.1f}")
 
@@ -7199,7 +6901,7 @@ def main():
                         print_backtest_metrics(metrics)
 
                         # 打印交易统计
-                        print(f"\n💼 交易统计:")
+                        print(f"\n 交易统计:")
                         print(f"   平均持仓天数: {trading_stats.get('平均持仓天数', 0):.1f}天")
                         print(f"   年化换手率: {trading_stats.get('年化换手率', 0):.2%}")
                         print(f"   总交易成本: {trading_stats.get('总交易成本', 0):,.2f}")
@@ -7215,7 +6917,7 @@ def main():
                     backtest_file = f'backtest_results_{timestamp}.pkl'
                     with open(backtest_file, 'wb') as f:
                         pickle.dump(backtest_results, f, protocol=4)
-                    print(f"\n✅ 回测结果已保存: {backtest_file}")
+                    print(f"\n 回测结果已保存: {backtest_file}")
 
                     # 生成回测报告
                     report_file = f'backtest_report_{timestamp}.txt'
@@ -7273,7 +6975,7 @@ def main():
                                     if total_sell > 0:
                                         f.write(f"  盈利交易比例: {profitable / total_sell:.2%}\n")
 
-                    print(f"✅ 回测报告已保存: {report_file}")
+                    print(f" 回测报告已保存: {report_file}")
 
                     # 绘制简单图表
                     try:
@@ -7281,7 +6983,7 @@ def main():
                     except Exception as e:
                         print(f"图表绘制失败: {e}")
                 else:
-                    print("❌ 回测失败")
+                    print(" 回测失败")
                     backtest_results = {
                         'metrics': {},
                         'trading_stats': {},
@@ -7289,7 +6991,7 @@ def main():
                         'trading_records': []
                     }
             else:
-                print("❌ 选股数据缺少必要的列")
+                print(" 选股数据缺少必要的列")
                 backtest_results = {
                     'metrics': {},
                     'trading_stats': {},
@@ -7297,7 +6999,7 @@ def main():
                     'trading_records': []
                 }
         else:
-            print("❌ 选股数据为空，无法执行回测")
+            print(" 选股数据为空，无法执行回测")
             backtest_results = {
                 'metrics': {},
                 'trading_stats': {},
@@ -7313,7 +7015,7 @@ def main():
         # 保存选股结果
         selected_file = f'selected_stocks_{timestamp}.csv'
         daily_selected_df.to_csv(selected_file, index=False, encoding='utf-8-sig')
-        print(f"✅ 选股结果已保存: {selected_file}")
+        print(f" 选股结果已保存: {selected_file}")
 
         # 10. 总结
         end_time = time.time()
@@ -7329,7 +7031,7 @@ def main():
             # 使用新的打印函数再次显示关键指标
             if backtest_results.get('metrics'):
                 metrics = backtest_results['metrics']
-                print(f"\n📊 关键指标:")
+                print(f"\n 关键指标:")
                 print(f"   回测区间: {metrics.get('起始日期', 'N/A')} 至 {metrics.get('结束日期', 'N/A')}")
                 print(f"   总收益率: {metrics.get('总收益率', 0):.2%}")
                 print(f"   年化收益率: {metrics.get('年化收益率', 0):.2%}")
@@ -7341,7 +7043,7 @@ def main():
                 print(f"   年化换手率: {trading_stats.get('年化换手率', 0):.2%}")
                 print(f"   平均持仓天数: {trading_stats.get('平均持仓天数', 0):.1f}天")
         else:
-            print("⚠️ 无有效回测结果")
+            print(" 无有效回测结果")
 
         if result and result.get('backtest_results'):
             portfolio_values = result['backtest_results'].get('portfolio_values', [])
@@ -7356,7 +7058,7 @@ def main():
                 buy_count = sum(1 for t in trading_records if t.get('type') == 'buy')
                 sell_count = sum(1 for t in trading_records if t.get('type') == 'sell')
 
-                print(f"\n📊 实际交易统计:")
+                print(f"\n 实际交易统计:")
                 print(f"   回测总天数: {total_days}天 ({total_months:.1f}个月)")
                 print(f"   买入次数: {buy_count}次")
                 print(f"   卖出次数: {sell_count}次")
@@ -7386,15 +7088,15 @@ def main():
                         print(f"   理论年化换手率: {avg_monthly_turnover * 12:.2%}")
 
         # 打印优化效果
-        print("\n🔧 优化效果总结:")
-        print("   1. ✅ 使用简化回测逻辑，避免复杂错误")
-        print("   2. ✅ 修复交易统计函数中的语法错误")
-        print("   3. ✅ 确保数据列名匹配")
-        print("   4. ✅ 简化价格数据获取逻辑")
-        print("   5. ✅ 添加异常处理，避免程序崩溃")
-        print("   6. ✅ 生成完整的回测报告和图表")
-        print("   7. ✅ 新增：显示完整的区间日期和年化指标")
-        print("   8. ✅ 新增：生成详细回测报告")
+        print("\n 优化效果总结:")
+        print("   1.  使用简化回测逻辑，避免复杂错误")
+        print("   2.  修复交易统计函数中的语法错误")
+        print("   3.  确保数据列名匹配")
+        print("   4.  简化价格数据获取逻辑")
+        print("   5.  添加异常处理，避免程序崩溃")
+        print("   6.  生成完整的回测报告和图表")
+        print("   7.  新增：显示完整的区间日期和年化指标")
+        print("   8.  新增：生成详细回测报告")
 
         return {
             'models': models,
@@ -7406,7 +7108,7 @@ def main():
         }
 
     except Exception as e:
-        print(f"❌ 程序执行出错: {str(e)}")
+        print(f" 程序执行出错: {str(e)}")
         traceback.print_exc()
         return None
 
@@ -7417,26 +7119,26 @@ def print_backtest_metrics(metrics):
 
     # 打印区间信息
     if '起始日期' in metrics and '结束日期' in metrics:
-        print(f"📅 回测区间: {metrics['起始日期']} 至 {metrics['结束日期']}")
+        print(f" 回测区间: {metrics['起始日期']} 至 {metrics['结束日期']}")
         print(f"   回测天数: {metrics.get('回测天数', 0)} 天")
         print(f"   交易日数: {metrics.get('交易日数', 0)} 天")
 
     # 打印收益率指标
-    print(f"\n📈 收益率指标:")
+    print(f"\n 收益率指标:")
     if '总收益率' in metrics:
         print(f"   总收益率: {metrics['总收益率']:.2%}")
     if '年化收益率' in metrics:
         print(f"   年化收益率: {metrics['年化收益率']:.2%}")
 
     # 打印风险指标
-    print(f"\n⚠️  风险指标:")
+    print(f"\n  风险指标:")
     if '年化波动率' in metrics:
         print(f"   年化波动率: {metrics['年化波动率']:.2%}")
     if '最大回撤' in metrics:
         print(f"   最大回撤: {metrics['最大回撤']:.2%}")
 
     # 打印风险调整收益指标
-    print(f"\n⚖️  风险调整收益指标:")
+    print(f"\n  风险调整收益指标:")
     if '年化夏普比率' in metrics:
         print(f"   年化夏普比率: {metrics['年化夏普比率']:.2f}")
     if '卡玛比率' in metrics:
@@ -7445,14 +7147,14 @@ def print_backtest_metrics(metrics):
         print(f"   信息比率: {metrics['信息比率']:.2f}")
 
     # 打印交易统计指标
-    print(f"\n💹 交易统计指标:")
+    print(f"\n 交易统计指标:")
     if '胜率' in metrics:
         print(f"   胜率: {metrics['胜率']:.2%}")
     if '盈亏比' in metrics:
         print(f"   盈亏比: {metrics['盈亏比']:.2f}")
 
     # 打印净值信息
-    print(f"\n💰 净值信息:")
+    print(f"\n 净值信息:")
     if '初始净值' in metrics and metrics['初始净值'] > 0:
         print(f"   初始净值: {metrics['初始净值']:,.2f}")
     if '最终净值' in metrics and metrics['最终净值'] > 0:
@@ -7537,20 +7239,20 @@ def save_backtest_report(metrics, filepath):
             f.write("-" * 40 + "\n")
 
             if metrics.get('年化夏普比率', 0) > 1.0:
-                f.write("✅ 夏普比率 > 1.0: 策略表现优秀\n")
+                f.write(" 夏普比率 > 1.0: 策略表现优秀\n")
             elif metrics.get('年化夏普比率', 0) > 0.5:
-                f.write("⚠️  夏普比率 0.5-1.0: 策略表现良好\n")
+                f.write("  夏普比率 0.5-1.0: 策略表现良好\n")
             else:
-                f.write("❌ 夏普比率 < 0.5: 策略风险调整收益偏低\n")
+                f.write(" 夏普比率 < 0.5: 策略风险调整收益偏低\n")
 
             if metrics.get('最大回撤', 0) > -0.20:
-                f.write("✅ 最大回撤 < 20%: 风险控制良好\n")
+                f.write(" 最大回撤 < 20%: 风险控制良好\n")
             elif metrics.get('最大回撤', 0) > -0.30:
-                f.write("⚠️  最大回撤 20%-30%: 风险控制一般\n")
+                f.write("  最大回撤 20%-30%: 风险控制一般\n")
             else:
-                f.write("❌ 最大回撤 > 30%: 风险控制需要改进\n")
+                f.write(" 最大回撤 > 30%: 风险控制需要改进\n")
 
-        print(f"✅ 详细回测报告已保存: {filepath}")
+        print(f" 详细回测报告已保存: {filepath}")
 
     except Exception as e:
         print(f"保存回测报告失败: {e}")
@@ -7622,7 +7324,7 @@ def plot_simple_backtest_results(backtest_results, timestamp):
         plt.savefig(plot_file, dpi=300, bbox_inches='tight')
         plt.show()
 
-        print(f"✅ 回测图表已保存: {plot_file}")
+        print(f" 回测图表已保存: {plot_file}")
 
     except Exception as e:
         print(f"绘制图表时出错: {e}")
@@ -7648,7 +7350,7 @@ if __name__ == "__main__":
             print("└─ 回测未执行或失败，未生成回测结果文件")
 
         # 打印优化效果 - 修复：先检查backtest_results是否存在
-        print("\n🔧 优化效果总结:")
+        print("\n 优化效果总结:")
 
         # 安全地获取缓存命中率
         cache_hit_rate = 0
@@ -7656,24 +7358,24 @@ if __name__ == "__main__":
                 'cache_stats' in result['backtest_results']):
             cache_hit_rate = result['backtest_results']['cache_stats'].get('hit_rate', 0)
 
-        print(f"   1. ✅ 交易成本缓存命中率: {cache_hit_rate:.2%}")
-        print("   2. ✅ 仓位管理器确保单只股票不超5%限制")
-        print("   3. ✅ 增加最小持有期(5天)，减少日内交易")
-        print("   4. ✅ 调整调仓频率为每季度，降低换手率")
-        print("   5. ✅ 优化止损止盈阈值，减少无效交易")
-        print("   6. ✅ 限制每日交易次数，避免过度交易")
+        print(f"   1.  交易成本缓存命中率: {cache_hit_rate:.2%}")
+        print("   2.  仓位管理器确保单只股票不超5%限制")
+        print("   3.  增加最小持有期(5天)，减少日内交易")
+        print("   4.  调整调仓频率为每季度，降低换手率")
+        print("   5.  优化止损止盈阈值，减少无效交易")
+        print("   6.  限制每日交易次数，避免过度交易")
 
         # 只有在backtest_results存在时才打印关键指标
         if result.get('backtest_results') is not None:
             metrics = result['backtest_results'].get('metrics', {})
             trading_stats = result['backtest_results'].get('trading_stats', {})
 
-            print(f"\n📊 关键指标:")
+            print(f"\n 关键指标:")
             print(f"   总收益率: {metrics.get('总收益率', 0):.2%}")
             print(f"   最大回撤: {metrics.get('最大回撤', 0):.2%}")
             print(f"   年化换手率: {trading_stats.get('年化换手率', 0):.2%}")
             print(f"   平均持仓天数: {trading_stats.get('平均持仓天数', 0):.1f}天")
         else:
-            print("\n⚠️ 无有效回测结果，无法显示关键指标")
+            print("\n 无有效回测结果，无法显示关键指标")
     else:
         print_section("程序执行失败!")
